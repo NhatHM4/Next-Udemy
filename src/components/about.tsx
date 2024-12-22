@@ -1,6 +1,8 @@
-import { Table } from "antd";
+import { Table, Button, Modal } from "antd";
 import { useEffect, useState } from "react";
 import type { TableColumnsType } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import Login from "./login";
 
 interface IUser {
     _id: number;
@@ -31,6 +33,19 @@ const columns: TableColumnsType<IUser> = [
 
 const About = () => {
     const [listUsers, setListUsers] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
 
     useEffect(() => {
         const fetchUsers = async (token: string) => {
@@ -49,26 +64,25 @@ const About = () => {
     }, []);
 
 
+
+
     return (
         <div>
-            <Table dataSource={listUsers} columns={columns} />;
-            {/* <table></table>
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                </tr>
-            </thead>
-            <tbody>
-                {listUsers && listUsers.map((user: IUser) => (
-                    <tr key={user._id}>
-                        <td>{user.name}</td>
-                        <td>{user.email}</td>
-                        <td>{user.role}</td>
-                    </tr>
-                ))}
-            </tbody> */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h2>Table Users</h2>
+                <div>
+                    <Button icon={<PlusOutlined />} onClick={showModal}>Add User</Button>
+                </div>
+            </div>
+            <Table
+                dataSource={listUsers}
+                columns={columns}
+                rowKey={"_id"}
+            />;
+
+            <Modal title="Basic Modal" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+                <Login />
+            </Modal>
         </div>
     );
 }
