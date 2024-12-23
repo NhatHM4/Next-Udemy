@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App.tsx';
 import { AppstoreOutlined, MailOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom/client';
 import {
   createBrowserRouter,
+  Link,
   Outlet,
-  RouterProvider,
-  Link
+  RouterProvider
 } from "react-router-dom";
-import About from './components/about.tsx';
 import './App.scss';
+import App from './App.tsx';
 import Login from './components/login.tsx';
+import UserTable from './components/users/user.table.tsx';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -23,7 +23,7 @@ const items: MenuItem[] = [
     icon: <MailOutlined />,
   },
   {
-    label: <Link to={"/about"}>Manage Users</Link>,
+    label: <Link to={"/users"}>Manage Users</Link>,
     key: 'app',
     icon: <AppstoreOutlined />,
   },
@@ -59,8 +59,8 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <App /> },
       {
-        path: "about",
-        element: <About />,
+        path: "users",
+        element: <UserTable />,
       },
     ]
   },
