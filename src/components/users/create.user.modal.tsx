@@ -1,5 +1,5 @@
-import { Input, Modal, notification } from "antd";
-import { useState } from "react";
+import { Form, FormProps, Input, InputNumber, Modal, notification, Select } from "antd";
+
 
 
 interface IProps {
@@ -8,17 +8,24 @@ interface IProps {
     token: string;
     fetchUsers: (token: string) => void;
 }
-const CreateUserModal = ({ isCreateModalOpen, setIsCreateModalOpen, token, fetchUsers }: IProps) => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [age, setAge] = useState('');
-    const [gender, setGender] = useState('');
-    const [address, setAddress] = useState('');
-    const [role, setRole] = useState('');
 
-    const handleOk = async () => {
-        const data = { name, email, password, age, gender, address, role };
+export type FieldType = {
+    name?: string;
+    email?: string;
+    password?: string;
+    age?: string;
+    gender?: string;
+    address?: string;
+    role?: string;
+};
+
+const CreateUserModal = ({ isCreateModalOpen, setIsCreateModalOpen, token, fetchUsers }: IProps) => {
+    const [form] = Form.useForm();
+    const { Option } = Select;
+
+    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+        const { name, email, password, age, gender, address, role } = values;
+        const data = { name, email, password, age, gender, address, role }
         const response = await fetch('http://localhost:8000/api/v1/users', {
             method: 'POST',
             headers: {
@@ -35,7 +42,8 @@ const CreateUserModal = ({ isCreateModalOpen, setIsCreateModalOpen, token, fetch
                 message: 'Success',
                 description: resJson.message
             })
-            handleCloseModel();
+            form.resetFields();
+            setIsCreateModalOpen(false);
         } else {
             notification.error({
                 message: 'Error',
@@ -44,52 +52,87 @@ const CreateUserModal = ({ isCreateModalOpen, setIsCreateModalOpen, token, fetch
         }
     };
 
-    const handleCloseModel = () => {
-        setIsCreateModalOpen(false);
-        setName('');
-        setEmail('');
-        setPassword('');
-        setAge('');
-        setGender('');
-        setAddress('');
-        setRole('');
-    }
+    const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+    };
+
     return (
         <Modal title="Add New User"
             open={isCreateModalOpen}
-            onOk={handleOk}
-            onCancel={() => handleCloseModel()}
-            maskClosable={false}>
-            <div>
-                <div>
-                    <label>Name</label>
-                    <Input value={name} onChange={(e) => { setName(e.target.value) }} />
-                </div>
-                <div>
-                    <label>Email</label>
-                    <Input value={email} onChange={(e) => { setEmail(e.target.value) }} />
-                </div>
-                <div>
-                    <label>Password</label>
-                    <Input value={password} onChange={(e) => { setPassword(e.target.value) }} />
-                </div>
-                <div>
-                    <label>Age</label>
-                    <Input value={age} onChange={(e) => { setAge(e.target.value) }} />
-                </div>
-                <div>
-                    <label>Gender</label>
-                    <Input value={gender} onChange={(e) => { setGender(e.target.value) }} />
-                </div>
-                <div>
-                    <label>Address</label>
-                    <Input value={address} onChange={(e) => { setAddress(e.target.value) }} />
-                </div>
-                <div>
-                    <label>Role</label>
-                    <Input value={role} onChange={(e) => { setRole(e.target.value) }} />
-                </div>
-            </div>
+            onOk={() => form.submit()}
+            onCancel={() => { form.resetFields(); setIsCreateModalOpen(false); }}
+            maskClosable={false}
+
+        >
+            <Form
+                form={form}
+                layout="vertical"
+                name="basic"
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
+                autoComplete="off"
+            >
+                <Form.Item<FieldType>
+                    label="Name"
+                    name="name"
+                    rules={[{ required: true, message: 'Please input your name!' }]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item<FieldType>
+                    label="Email"
+                    name="email"
+                    rules={[{ required: true, message: 'Please input your email!' }]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item<FieldType>
+                    label="Password"
+                    name="password"
+                    rules={[{ required: true, message: 'Please input your password!' }]}
+                >
+                    <Input.Password />
+                </Form.Item>
+
+                <Form.Item<FieldType>
+                    label="Age"
+                    name="age"
+                    rules={[{ required: true, message: 'Please input your age!' }]}
+                >
+                    <InputNumber />
+                </Form.Item>
+
+                <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
+                    <Select
+                        placeholder="Select a option and change input text above"
+                        allowClear
+                    >
+                        <Option value="male">male</Option>
+                        <Option value="female">female</Option>
+                        <Option value="other">other</Option>
+                    </Select>
+                </Form.Item>
+
+                <Form.Item<FieldType>
+                    label="Address"
+                    name="address"
+                    rules={[{ required: true, message: 'Please input your address!' }]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item name="role" label="Role" rules={[{ required: true }]}>
+                    <Select
+                        placeholder="Select a option and change input text above"
+                        allowClear
+                    >
+                        <Option value="USER">USER</Option>
+                        <Option value="ADMIN">ADMIN</Option>
+                    </Select>
+                </Form.Item>
+            </Form>
         </Modal>
     );
 }
