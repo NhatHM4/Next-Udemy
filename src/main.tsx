@@ -13,6 +13,8 @@ import './App.scss';
 import App from './App.tsx';
 import Login from './components/login.tsx';
 import UserTable from './components/users/user.table.tsx';
+import TrackTable from './components/tracks/track.table.tsx';
+import CommentTable from './components/comments/comment.table.tsx';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -24,7 +26,17 @@ const items: MenuItem[] = [
   },
   {
     label: <Link to={"/users"}>Manage Users</Link>,
-    key: 'app',
+    key: 'users',
+    icon: <AppstoreOutlined />,
+  },
+  {
+    label: <Link to={"/tracks"}>Manage Tracks</Link>,
+    key: 'tracks',
+    icon: <AppstoreOutlined />,
+  },
+  {
+    label: <Link to={"/comments"}>Manage Comments</Link>,
+    key: 'comments',
     icon: <AppstoreOutlined />,
   },
 
@@ -61,6 +73,14 @@ const router = createBrowserRouter([
       {
         path: "users",
         element: <UserTable />,
+      },
+      {
+        path: "tracks",
+        element: <TrackTable />,
+      },
+      {
+        path: "comments",
+        element: <CommentTable />,
       },
     ]
   },

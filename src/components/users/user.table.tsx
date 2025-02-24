@@ -29,7 +29,7 @@ const About = () => {
     // const [pageSize, setPageSize] = useState(10);
     const [meta, setMeta] = useState({
         current: 1,
-        pageSize: 2,
+        pageSize: 10,
         pages: 0,
         total: 0
     });
